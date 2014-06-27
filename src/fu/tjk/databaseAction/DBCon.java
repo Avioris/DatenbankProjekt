@@ -18,8 +18,7 @@ public class DBCon {
 	private Statement statement;
 
 	/**
-	 * Connection to database.
-	 * Call this method before you execute querys.
+	 * Connection to database. Call this method before you execute querys.
 	 */
 	public void createConncetion() {
 		try {
@@ -31,16 +30,18 @@ public class DBCon {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	/**
-	 * This method executes a sqlquery on the database.
-	 * Throws an exception if the query is wrong.
-	 * @param sqlquery The query to execute.
-	 * @return A ResultSet with the data.
+	 * This method executes a sqlquery on the database. Throws an exception if
+	 * the query is wrong.
+	 * 
+	 * @param sqlquery
+	 *            The query to execute.
+	 * @return A ResultSet with the data. Can be null.
 	 */
-	public ResultSet searchInDB(String sqlquery){
+	public ResultSet searchInDB(String sqlquery) {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery(sqlquery);
@@ -49,15 +50,15 @@ public class DBCon {
 		}
 		return resultSet;
 	}
-	
+
 	/**
-	 * Closes the connection to the database.
-	 * Call this method after you finished.
+	 * Closes the connection to the database. Call this method after you
+	 * finished.
 	 */
-	public void closeConnection(){
+	public void closeConnection() {
 		try {
-			connect.close();
 			statement.close();
+			connect.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -8,8 +8,8 @@ public class Querys {
 			+ "WHERE Heim='TEAM' OR Gast='TEAM' "
 			+ "ORDER BY Spiel.Datum DESC LIMIT 3";
 	
-	public static String TEAMS = 
-			"SELECT DISTINCT Name "
+	public static String TEAMS_IDS = 
+			"SELECT Name, V_ID "
 			+ "FROM Verein ";
 	
 	public static String NAME = 

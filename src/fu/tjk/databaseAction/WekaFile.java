@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class WekaFile implements Createable {
+	
+	public static final String[] NUMERIC = new String[]{"NUMERIC"}; 
 
 	private String relation;
 	private ArrayList<String> attributes = new ArrayList<String>();
@@ -32,12 +34,16 @@ public class WekaFile implements Createable {
 	}
 
 	public void createFile() {
-
+		System.out.println("Creating " + relation + ".arff...");
 		String nl = "\n", dnl = "\n\n";
 
 		try {
-			BufferedWriter br = new BufferedWriter(new FileWriter(
-					new File(path)));
+			File file = new File(path + relation + ".arff");
+			if (!file.createNewFile()) {
+				System.err.println("File already exists!");
+				return;
+			}
+			BufferedWriter br = new BufferedWriter(new FileWriter(file));
 
 			br.write("@RELATION " + relation + nl);
 
@@ -48,7 +54,7 @@ public class WekaFile implements Createable {
 				} else {
 					br.write("{ '" + datatypes.get(i)[0]);
 					for (int j = 1; j < datatypes.get(i).length; j++) {
-						br.write("', " + datatypes.get(i)[j]);
+						br.write("', '" + datatypes.get(i)[j]);
 					}
 					br.write("' }" + dnl);
 				}
@@ -64,6 +70,7 @@ public class WekaFile implements Createable {
 			e.printStackTrace();
 		}
 
+		System.out.println("Created " + relation + ".arff Successfull!");
 	}
 
 }
