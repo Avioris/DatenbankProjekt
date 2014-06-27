@@ -37,7 +37,7 @@ public class Main {
 		System.out.println("Creating Connection...");
 		con.createConncetion();
 		System.out.println("Connected!");
-		
+
 	}
 
 	private void initWekaFile() {
@@ -130,21 +130,21 @@ public class Main {
 			// versus every other team thats not calculated already
 			for (int j = i + 1; j < names.size(); j++) {
 
-				StringBuilder valueLine = new StringBuilder();
-
-				// add team and enemy
-				valueLine.append("'");
-				valueLine.append(names.get(i));
-				valueLine.append("', '");
-				valueLine.append(names.get(j));
-				valueLine.append("', ");
-
-				// Goals for team of last 3 games
-				String tID = ids.get(i).toString();
-				String query = Querys.GOALS_OF_LAST_THREE_GAMES.replace("TEAM",
-						tID);
-
 				try {
+					StringBuilder valueLine = new StringBuilder();
+
+					// add team and enemy
+					valueLine.append("'");
+					valueLine.append(names.get(i));
+					valueLine.append("', '");
+					valueLine.append(names.get(j));
+					valueLine.append("', ");
+
+					// Goals for team of last 3 games
+					String tID = ids.get(i).toString();
+					String query = Querys.GOALS_OF_LAST_THREE_GAMES.replace(
+							"TEAM", tID);
+
 					ResultSet set = con.searchInDB(query);
 					while (set.next()) {
 						int tore;
@@ -159,11 +159,155 @@ public class Main {
 
 					}
 					set.close();
+
+					// Goals for enemy
+					String eID = ids.get(i).toString();
+					query = Querys.GOALS_OF_LAST_THREE_GAMES.replace("TEAM",
+							eID);
+					set = con.searchInDB(query);
+					while (set.next()) {
+						int goals;
+
+						if (set.getInt("Heim") == ids.get(j)) {
+							goals = set.getInt("Tore_Heim");
+						} else {
+							goals = set.getInt("Tore_Gast");
+						}
+						valueLine.append(goals);
+						valueLine.append(", ");
+
+					}
+					set.close();
+
+					// average goal rate in the last 5 games of team
+					query = Querys.GOALS_OF_LAST_FIVE_GAMES
+							.replace("TEAM", tID);
+					set = con.searchInDB(query);
+					int goals = 0;
+					while (set.next()) {
+						if (set.getInt("Heim") == ids.get(j)) {
+							goals += set.getInt("Tore_Heim");
+						} else {
+							goals += set.getInt("Tore_Gast");
+						}
+					}
+					set.close();
+					double result = goals / 5.0;
+					valueLine.append(result);
+					valueLine.append(", ");
+					
+					// average goal rate in the last 5 games of enemy
+					query = Querys.GOALS_OF_LAST_FIVE_GAMES
+							.replace("TEAM", eID);
+					set = con.searchInDB(query);
+					goals = 0;
+					
+					while (set.next()) {
+						if (set.getInt("Heim") == ids.get(j)) {
+							goals += set.getInt("Tore_Heim");
+						} else {
+							goals += set.getInt("Tore_Gast");
+						}
+					}
+					set.close();
+					result = goals / 5.0;
+					valueLine.append(result);
+					valueLine.append(", ");
+					
+					// team rate of goal to pass overall
+					query = Querys.PASS_AND_GOALS_OF_TEAM.replace("TEAM", tID);
+					set = con.searchInDB(query);
+					goals = 0;
+					int pass = 0;
+					
+					while(set.next()){
+						goals += set.getInt("Tore");
+						pass += set.getInt("Vorlagen");
+					}
+					set.close();
+					result = goals /(goals+pass*1.0) * 100;
+					valueLine.append(result);
+					valueLine.append(", ");
+					
+					// average goal rate in the last 5 games of enemy
+					query = Querys.PASS_AND_GOALS_OF_TEAM.replace("TEAM", eID);
+					set = con.searchInDB(query);
+					goals = 0;
+					pass = 0;
+					
+					while(set.next()){
+						goals += set.getInt("Tore");
+						pass += set.getInt("Vorlagen");
+					}
+					result = goals /(goals+pass*1.0) * 100;
+					valueLine.append(result);
+					valueLine.append(", ");
+					
+					// goals for team of last three games as home game
+					query = Querys.GOALS_OF_LAST_THREE_HOME_GAMES.replace("TEAM", tID);
+					set = con.searchInDB(query);
+					
+					while(set.next()){
+						goals = set.getInt("Tore_Heim");
+						valueLine.append(goals);
+						valueLine.append(", ");
+					}
+					set.close();
+					
+					// goals for enemy of last three games as home game
+					query = Querys.GOALS_OF_LAST_THREE_HOME_GAMES.replace("TEAM", eID);
+					set = con.searchInDB(query);
+					
+					while(set.next()){
+						goals = set.getInt("Tore_Heim");
+						valueLine.append(goals);
+						valueLine.append(", ");
+					}
+					set.close();
+					
+					// outgoing of last 5 games for team
+					query = Querys.GOALS_OF_LAST_FIVE_GAMES.replace("TEAM", tID);
+					set = con.searchInDB(query);
+					
+					while(set.next()){
+						valueLine.append(" '");
+						int g_home = set.getInt("Tore_Heim");
+						int g_guest = set.getInt("Tore_Gast");
+						
+						if(set.getInt("Heim") == ids.get(i)){
+							if(g_home > g_guest){
+								valueLine.append("Gewonnen");
+							}
+							else if(g_home == g_guest){
+								valueLine.append("Unentschieden");
+							}
+							else {
+								valueLine.append("Verloren");
+							}
+						}else {
+							if(g_home < g_guest){
+								valueLine.append("Gewonnen");
+							}
+							else if(g_home == g_guest){
+								valueLine.append("Unentschieden");
+							}
+							else {
+								valueLine.append("Verloren");
+							}
+						}
+						valueLine.append("',");
+					}
+					set.close();
+					
+					// delete last char
+					valueLine.deleteCharAt(valueLine.length()-1);
+					
+					// add values to file
+					wekaFile.addValueLine(valueLine.toString());
+
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-
-				wekaFile.addValueLine(valueLine.toString());
 
 			}
 		}
