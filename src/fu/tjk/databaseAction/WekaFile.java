@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class WekaFile implements Createable {
-	
-	public static final String[] NUMERIC = new String[]{"NUMERIC"}; 
+
+	public static final String[] NUMERIC = new String[] { "NUMERIC" };
 
 	private String relation;
 	private ArrayList<String> attributes = new ArrayList<String>();
@@ -34,8 +34,7 @@ public class WekaFile implements Createable {
 	}
 
 	public void createFile() {
-		System.out.println("Creating " + relation + ".arff...");
-		String nl = "\n", dnl = "\n\n";
+		String nl = "\n";
 
 		try {
 			File file = new File(path + relation + ".arff");
@@ -45,7 +44,7 @@ public class WekaFile implements Createable {
 			}
 			BufferedWriter br = new BufferedWriter(new FileWriter(file));
 
-			br.write("@RELATION " + relation + nl);
+			br.write("@RELATION " + relation + nl + nl);
 
 			for (int i = 0; i < attributes.size(); i++) {
 				br.write("@ATTRIBUTE " + attributes.get(i) + " ");
@@ -56,9 +55,10 @@ public class WekaFile implements Createable {
 					for (int j = 1; j < datatypes.get(i).length; j++) {
 						br.write("', '" + datatypes.get(i)[j]);
 					}
-					br.write("' }" + dnl);
+					br.write("' }" + nl);
 				}
 			}
+			br.write(nl);
 
 			br.write("@DATA" + nl);
 			for (int i = 0; i < values.size(); i++) {
@@ -70,7 +70,23 @@ public class WekaFile implements Createable {
 			e.printStackTrace();
 		}
 
-		System.out.println("Created " + relation + ".arff Successfull!");
+	}
+
+	public static void main(String[] args) {
+		WekaFile f = new WekaFile("/home/tj/DBS2014/");
+		f.addRealtion("Testrelation");
+		f.addAttribute("A1", WekaFile.NUMERIC);
+		f.addAttribute("A2", WekaFile.NUMERIC);
+		f.addAttribute("A3", new String[] { "Hannes", "Piet", "Hack" });
+		ArrayList<String> t = new ArrayList<String>();
+		t.add("Matteo");
+		t.add("Thölken");
+		f.addAttribute("A4", t.toArray(new String[t.size()]));
+
+		f.addValueLine("5, 3, 'Hannes', 'Matteo'");
+		f.addValueLine("71, 28, 'Hack', 'Thölken'");
+		f.createFile();
+
 	}
 
 }

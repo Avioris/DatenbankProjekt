@@ -13,8 +13,8 @@ public class Main {
 
 	public void go() {
 		connect();
-		initWekaFile();
 		getTeamInfos();
+		initWekaFile();
 		createFeatures();
 		createWekaFile();
 		close();
@@ -22,18 +22,27 @@ public class Main {
 	}
 
 	private void createWekaFile() {
+		System.out.println("Creating WekaFile...");
 		wekaFile.createFile();
+		System.out.println("Created WekaFile!");
 	}
 
 	private void close() {
+		System.out.println("Closing Connection...");
 		con.closeConnection();
+		System.out.println("Connection closed!");
 	}
 
 	private void connect() {
+		System.out.println("Creating Connection...");
 		con.createConncetion();
+		System.out.println("Connected!");
+		
 	}
 
 	private void initWekaFile() {
+
+		System.out.println("Init WekaFile...");
 		// Set Relation
 		wekaFile.addRealtion("Features");
 
@@ -41,12 +50,12 @@ public class Main {
 		wekaFile.addAttribute("Team", names.toArray(new String[names.size()]));
 		wekaFile.addAttribute("Gegner", names.toArray(new String[names.size()]));
 
-		// Goals for team of last 3 games against enemy
+		// Goals for team of last 3 games
 		wekaFile.addAttribute("Team-Tore-Letztes-Spiel", WekaFile.NUMERIC);
 		wekaFile.addAttribute("Team-Tore-Vorletztes-Spiel", WekaFile.NUMERIC);
 		wekaFile.addAttribute("Team-Tore-Vorvorletztes-Spiel", WekaFile.NUMERIC);
 
-		// Goals for enemy of last 3 games against team
+		// Goals for enemy of last 3 games
 		wekaFile.addAttribute("Gegener-Tore-Letzes-Spiel", WekaFile.NUMERIC);
 		wekaFile.addAttribute("Gegner-Tore-Vorletztes-Spiel", WekaFile.NUMERIC);
 		wekaFile.addAttribute("Gegner-Tore-Vorvorletztes-Spiel",
@@ -115,18 +124,50 @@ public class Main {
 	}
 
 	private void createFeatures() {
-		
+		System.out.println("Creating Features...");
 		// all teams
-		for (int i = 0; i < names.size()-1; i++) {
+		for (int i = 0; i < names.size() - 1; i++) {
 			// versus every other team thats not calculated already
-			for (int j = i+1; j < names.size(); j++) {
-				String valueLine = names.get(i)+", "+names.get(j);
-				
-				
-				
-				wekaFile.addValueLine(valueLine);
+			for (int j = i + 1; j < names.size(); j++) {
+
+				StringBuilder valueLine = new StringBuilder();
+
+				// add team and enemy
+				valueLine.append("'");
+				valueLine.append(names.get(i));
+				valueLine.append("', '");
+				valueLine.append(names.get(j));
+				valueLine.append("', ");
+
+				// Goals for team of last 3 games
+				String tID = ids.get(i).toString();
+				String query = Querys.GOALS_OF_LAST_THREE_GAMES.replace("TEAM",
+						tID);
+
+				try {
+					ResultSet set = con.searchInDB(query);
+					while (set.next()) {
+						int tore;
+
+						if (set.getInt("Heim") == ids.get(i)) {
+							tore = set.getInt("Tore_Heim");
+						} else {
+							tore = set.getInt("Tore_Gast");
+						}
+						valueLine.append(tore);
+						valueLine.append(", ");
+
+					}
+					set.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+				wekaFile.addValueLine(valueLine.toString());
+
 			}
 		}
+		System.out.println("Created all Features!");
 
 	}
 
