@@ -6,7 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class WekaFile implements Createable {
+/**
+ * This class is used to create a weka file. It implements the Creatable
+ * interface.
+ */
+public class WekaFile implements CreateableARFF {
 
 	public static final String[] NUMERIC = new String[] { "NUMERIC" };
 
@@ -16,6 +20,12 @@ public class WekaFile implements Createable {
 	private ArrayList<String> values = new ArrayList<String>();
 	private String path;
 
+	/**
+	 * Creates a WekaFile-Object.
+	 * 
+	 * @param path
+	 *            The path to the file. Filename exclusive!
+	 */
 	public WekaFile(String path) {
 		this.path = path;
 	}
@@ -69,23 +79,6 @@ public class WekaFile implements Createable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-	}
-
-	public static void main(String[] args) {
-		WekaFile f = new WekaFile("/home/tj/DBS2014/");
-		f.addRealtion("Testrelation");
-		f.addAttribute("A1", WekaFile.NUMERIC);
-		f.addAttribute("A2", WekaFile.NUMERIC);
-		f.addAttribute("A3", new String[] { "Hannes", "Piet", "Hack" });
-		ArrayList<String> t = new ArrayList<String>();
-		t.add("Matteo");
-		t.add("Thölken");
-		f.addAttribute("A4", t.toArray(new String[t.size()]));
-
-		f.addValueLine("5, 3, 'Hannes', 'Matteo'");
-		f.addValueLine("71, 28, 'Hack', 'Thölken'");
-		f.createFile();
 
 	}
 

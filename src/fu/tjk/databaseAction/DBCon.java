@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * This class is used for communication with the database.
+ */
 public class DBCon {
 
 	private final String HOST = "localhost";
@@ -18,7 +21,7 @@ public class DBCon {
 	private Statement statement;
 
 	/**
-	 * Connection to database. Call this method before you execute querys.
+	 * Connection to database. Call this method before you execute query.
 	 */
 	public void createConncetion() {
 		try {

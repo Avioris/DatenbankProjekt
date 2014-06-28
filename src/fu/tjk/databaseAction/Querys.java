@@ -1,5 +1,8 @@
 package fu.tjk.databaseAction;
 
+/**
+ * This class saves useful query.
+ */
 public class Querys {
 
 	public static String GOALS_OF_LAST_THREE_GAMES = 
