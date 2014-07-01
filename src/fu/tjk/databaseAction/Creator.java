@@ -8,7 +8,18 @@ import java.util.Properties;
 
 /**
  * This class creates a wekafile with the realtion "Features" and following
- * attributes: 1.
+ * attributes: 
+ * 1. Name of the team
+ * 2. Name of the enemy team
+ * 3-5. Goals of the last three games for team
+ * 6-8. Goals for enemy of last three games
+ * 9. Average goal rate in the last 5 games of team
+ * 10. Average goal rate in the last 5 games of team
+ * 11. Team rate of goal to pass overall
+ * 12. Enemy team rate of goal to pass overall
+ * 13-15. Goals for team of last three games as home game
+ * 16-18. Goals for enemy team of last three games as home game
+ * 19-23. Outgoing of the last five games for team
  * 
  * File will be created in /home/user/dbs2014/
  */
